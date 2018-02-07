@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using Xunit;
+using System.IO;
 
 namespace LetsFindLunchTest
 {
@@ -18,6 +19,24 @@ namespace LetsFindLunchTest
             }
 
             return chromeDriver;
+        }
+
+        public static void TakeScreenShot(this IWebDriver driver, string title)
+        {
+            Screenshot screenshot = ((ITakesScreenshot)driver).GetScreenshot();
+
+            string fileName = $"{DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss")} {title}.png";
+
+            string directoryPath = Path.Combine(Environment.CurrentDirectory, "Screenshots");
+
+            if (!Directory.Exists(directoryPath))
+            {
+                Directory.CreateDirectory(directoryPath);
+            }
+
+            string filePath = Path.Combine(directoryPath, fileName);
+
+            screenshot.SaveAsFile(filePath, ScreenshotImageFormat.Png);
         }
 
         public static IWebElement GetElement(this ISearchContext context, By by)

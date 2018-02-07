@@ -22,6 +22,8 @@ namespace LetsFindLunchTest
 
             var h1Element = headerElement.GetElement(By.TagName("h1"));
 
+            driver.TakeScreenShot("PageLoads");
+
             Assert.True(h1Element.Text == "Let's find lunch");
         }
 
@@ -58,6 +60,8 @@ namespace LetsFindLunchTest
             btnFindLunch.Click();
 
             listItems = wait.Until(drv => olLocations.FindElements(By.TagName("li")));
+
+            driver.TakeScreenShot($"ResultsFound{zipCode}");
 
             Assert.True(listItems.Count == 2);
         }
