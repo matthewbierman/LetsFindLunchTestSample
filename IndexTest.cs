@@ -6,76 +6,70 @@ using OpenQA.Selenium.Support.UI;
 
 namespace LetsFindLunchTest
 {
-    public class IndexTest
+    public class IndexTest : IDisposable
     {
+
+        private const string indexURL = "https://lets-find-lunch-sample.glitch.me/";
 
         [Fact]
         public void PageLoads()
         {
-            Driver.Navigate().GoToUrl(indexURL);
+            var driver = WebDrivers.GetChromeDriver();
 
-            var headerElement = GetElement(By.TagName("header"));
+            driver.Navigate().GoToUrl(indexURL);
 
-            var h1Element = GetElement(By.TagName("h1"), headerElement);
+            var headerElement = driver.GetElement(By.TagName("header"));
+
+            var h1Element = headerElement.GetElement(By.TagName("h1"));
 
             Assert.True(h1Element.Text == "Let's find lunch");
         }
 
-        private IWebDriver Driver
-        {
-            get
-            {
-                return WebDrivers.ChromeDriver;
-            }
-        }
 
         [Theory]
         [InlineData("52807")]
+        [InlineData("61201")]
         public void ResultsFound(string zipCode)
         {
-            Driver.Navigate().GoToUrl(indexURL);
+            var driver = WebDrivers.GetChromeDriver();
 
-            var olLocations = GetElement(By.Id("olLocations"));
+            driver.Navigate().GoToUrl(indexURL);
+
+            var olLocations = driver.GetElement(By.Id("olLocations"));
 
             Assert.True(olLocations.FindElements(By.TagName("li")).Count == 0);
 
-            var txtLocation = GetElement(By.Id("txtLocation"));
+            var txtLocation = driver.GetElement(By.Id("txtLocation"));
 
             txtLocation.SendKeys(zipCode);
 
             Assert.True(txtLocation.GetAttribute("value") == zipCode);
 
-            var btnFindLunch = GetElement(By.Id("btnFindLunch"));
+            var btnFindLunch = driver.GetElement(By.Id("btnFindLunch"));
 
             btnFindLunch.Click();
 
-            var wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(2));
+            var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(2));
 
-            var listItems = wait.Until(driver=> olLocations.FindElements(By.TagName("li")));
+            var listItems = wait.Until(drv => olLocations.FindElements(By.TagName("li")));
 
             Assert.True(listItems.Count == 1);
 
             btnFindLunch.Click();
 
-            listItems = wait.Until(driver=> olLocations.FindElements(By.TagName("li")));
+            listItems = wait.Until(drv => olLocations.FindElements(By.TagName("li")));
 
             Assert.True(listItems.Count == 2);
         }
 
-        private const string indexURL = "https://lets-find-lunch-sample.glitch.me/";
 
-        private IWebElement GetElement(By by, IWebElement element = null)
+        public void Dispose()
         {
-            ISearchContext context = (ISearchContext)element ?? (ISearchContext)Driver;
-
-            ReadOnlyCollection<IWebElement> elements = null;
-
-            elements = context.FindElements(by);
-
-            Assert.True(elements.Count == 1);
-
-            return elements[0];
+            WebDrivers.DestroyChromeDriver();
         }
+
+
+
 
     }
 }
