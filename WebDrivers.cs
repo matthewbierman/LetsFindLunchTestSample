@@ -1,17 +1,14 @@
 using System;
-using System.Collections.ObjectModel;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
-using Xunit;
-using System.IO;
 
 namespace LetsFindLunchTest
 {
-    public static class WebDrivers
+    public class WebDrivers : IDisposable
     {
-        private static IWebDriver chromeDriver = null;
+        private IWebDriver chromeDriver = null;
 
-        public static IWebDriver GetChromeDriver()
+        public IWebDriver GetChromeDriver()
         {
             if (chromeDriver == null)
             {
@@ -21,36 +18,7 @@ namespace LetsFindLunchTest
             return chromeDriver;
         }
 
-        public static void TakeScreenShot(this IWebDriver driver, string title)
-        {
-            Screenshot screenshot = ((ITakesScreenshot)driver).GetScreenshot();
-
-            string fileName = $"{DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss")} {title}.png";
-
-            string directoryPath = Path.Combine(Environment.CurrentDirectory, "Screenshots");
-
-            if (!Directory.Exists(directoryPath))
-            {
-                Directory.CreateDirectory(directoryPath);
-            }
-
-            string filePath = Path.Combine(directoryPath, fileName);
-
-            screenshot.SaveAsFile(filePath, ScreenshotImageFormat.Png);
-        }
-
-        public static IWebElement GetElement(this ISearchContext context, By by)
-        {
-            ReadOnlyCollection<IWebElement> elements = null;
-
-            elements = context.FindElements(by);
-
-            Assert.True(elements.Count == 1);
-
-            return elements[0];
-        }
-
-        public static void DestroyChromeDriver()
+        public void Dispose()
         {
             if (chromeDriver != null)
             {

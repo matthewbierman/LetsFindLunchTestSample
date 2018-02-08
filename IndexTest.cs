@@ -1,20 +1,26 @@
 using System;
-using Xunit;
 using OpenQA.Selenium;
-using System.Collections.ObjectModel;
 using OpenQA.Selenium.Support.UI;
+using Xunit;
 
 namespace LetsFindLunchTest
 {
-    public class IndexTest : IDisposable
+    public class IndexTest : IClassFixture<WebDrivers>
     {
+
+        private WebDrivers webDrivers;
+
+        public IndexTest(WebDrivers webDrivers)
+        {
+            this.webDrivers = webDrivers;
+        }
 
         private const string indexURL = "https://lets-find-lunch-sample.glitch.me/";
 
         [Fact]
         public void PageLoads()
         {
-            var driver = WebDrivers.GetChromeDriver();
+            var driver = webDrivers.GetChromeDriver();
 
             driver.Navigate().GoToUrl(indexURL);
 
@@ -33,7 +39,7 @@ namespace LetsFindLunchTest
         [InlineData("61201")]
         public void ResultsFound(string zipCode)
         {
-            var driver = WebDrivers.GetChromeDriver();
+            var driver = webDrivers.GetChromeDriver();
 
             driver.Navigate().GoToUrl(indexURL);
 
@@ -65,15 +71,5 @@ namespace LetsFindLunchTest
 
             Assert.True(listItems.Count == 2);
         }
-
-
-        public void Dispose()
-        {
-            WebDrivers.DestroyChromeDriver();
-        }
-
-
-
-
     }
 }
