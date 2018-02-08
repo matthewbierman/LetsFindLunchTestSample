@@ -7,7 +7,6 @@ namespace LetsFindLunchTest
 {
     public class IndexTest : IClassFixture<WebDrivers>
     {
-
         private WebDrivers webDrivers;
 
         public IndexTest(WebDrivers webDrivers)
